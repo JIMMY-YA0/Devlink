@@ -79,6 +79,12 @@ export default function Home() {
             .upload(`${userId}/${image.file.name}`, image.file, { upsert: true })
           if (error) throw error
           const resp = supabase.storage.from('public').getPublicUrl(data.path)
+          const publicUrl = resp.data.publicUrl
+          const updateUserResponse = await supabase
+            .from('users')
+            .update({ profile_picture_url: publicUrl })
+            .eq('id', userId)
+          if (updateUserResponse.error) throw updateUserResponse.error
         }
       }
     } catch (error) {
