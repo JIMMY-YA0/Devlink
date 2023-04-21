@@ -56,6 +56,7 @@ export default function Home() {
           .select()
         if (error) throw error
         console.log('data: ', data)
+        setLinks([...data, ...links])
       }
     } catch (error) {
       console.log('error: ', error)
@@ -65,8 +66,13 @@ export default function Home() {
   return (
     <div className="flex flex-col w-full justify-center items-center mt-4">
       {links?.map((link: Link, index: number) => (
-        <div className="mt-4" key={index}>
-          <a href={link.url} target="_blank" rel="noreferrer">
+        <div className="mt-4 flex text-center text-white" key={index}>
+          <a
+            className="shadow-xl w-96 p-4 bg-indigo-400 rounded-lg"
+            href={link.url}
+            target="_blank"
+            rel="noreferrer"
+          >
             {link.title}
           </a>
         </div>
