@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import ImageUploading, { ImageListType } from 'react-images-uploading'
 import { useEffect, useState } from 'react'
 import supabase from '@/utils/supabaseClient'
@@ -16,6 +17,10 @@ export default function Home() {
   const [links, setLinks] = useState<Link[]>()
   const [images, setImages] = useState<ImageListType>([])
   const [profilePictureUrl, setProfilePictureUrl] = useState<string | undefined>()
+
+  const router = useRouter()
+  const { creatorSlug } = router.query
+  console.log('creatorSlug1: ', creatorSlug)
 
   const onChange = (imageList: ImageListType) => {
     setImages(imageList)
@@ -56,20 +61,22 @@ export default function Home() {
         if (userId) {
           const { data, error } = await supabase
             .from('users')
-            .select('profile_picture_url')
-            .eq('id', userId)
+            .select('id, profile_picture_url')
+            .eq('id', creatorSlug)
           if (error) throw error
           console.log('data: ', data)
           const profilePictureUrl = data[0].profile_picture_url
+          const userId = data[0]['id']
           setProfilePictureUrl(profilePictureUrl)
+          setUserId(userId)
         }
       } catch (error) {
         console.log('error: ', error)
       }
     }
 
-    if (userId) getUser()
-  }, [userId])
+    if (creatorSlug) getUser()
+  }, [userId, creatorSlug])
 
   const addNewLink = async () => {
     try {
@@ -176,7 +183,6 @@ export default function Home() {
           </div>
           <div>
             <h1>Image upload</h1>
-            {/* <Image src={images[0]?.dataURL} width={100} height={100} alt="" /> */}
             <ImageUploading multiple value={images} onChange={onChange} maxNumber={1}>
               {({
                 imageList,

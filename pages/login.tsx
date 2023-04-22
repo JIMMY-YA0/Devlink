@@ -6,6 +6,7 @@ const Login = () => {
   const [email, setEmail] = useState<string | undefined>()
   const [password, setPassword] = useState<string | undefined>()
   const router = useRouter()
+
   async function signInWithEmail() {
     try {
       if (email && password) {
@@ -13,8 +14,9 @@ const Login = () => {
         console.log('response: ', response)
         if (response.error) throw response.error
         const userId = response.data.user?.id
+
         console.log('UserId: ', userId)
-        router.push('/')
+        router.push(`/${userId}`)
       }
     } catch (error) {
       console.log('error: ', error)
