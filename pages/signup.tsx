@@ -1,5 +1,5 @@
-import supabase from '@/utils/supabaseClient'
 import { useState } from 'react'
+import supabase from '@/utils/supabaseClient'
 
 const Signup = () => {
   const [email, setEmail] = useState<string | undefined>()
@@ -9,11 +9,22 @@ const Signup = () => {
     try {
       if (email && password) {
         const response = await supabase.auth.signUp({ email, password })
-        console.log('response: ', response)
         if (response.error) throw response.error
         const userId = response.data.user?.id
-        console.log('UserId: ', userId)
+        if (userId) {
+          await createUser(userId)
+          console.log('UserId: ', userId)
+        }
       }
+    } catch (error) {
+      console.log('error: ', error)
+    }
+  }
+
+  async function createUser(userId: string) {
+    try {
+      const { error } = await supabase.from('users').insert({ id: userId })
+      if (error) throw error
     } catch (error) {
       console.log('error: ', error)
     }

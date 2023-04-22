@@ -24,7 +24,7 @@ export default function Home() {
     const getUser = async () => {
       const user = await supabase.auth.getUser()
       console.log('user: ', user)
-      if (user) {
+      if (user.data.user) {
         const userId = user.data.user?.id
         setIsAuthenticated(true)
         setUserId(userId)
