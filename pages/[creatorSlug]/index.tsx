@@ -15,6 +15,7 @@ export default function Home() {
   const [url, setUrl] = useState<string | undefined>()
   const [links, setLinks] = useState<Link[]>()
   const [images, setImages] = useState<ImageListType>([])
+  const [profilePictureUrl, setProfilePictureUrl] = useState<string | undefined>()
 
   const onChange = (imageList: ImageListType) => {
     setImages(imageList)
@@ -47,6 +48,27 @@ export default function Home() {
       }
     }
     if (userId) getLinks()
+  }, [userId])
+
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        if (userId) {
+          const { data, error } = await supabase
+            .from('users')
+            .select('profile_picture_url')
+            .eq('id', userId)
+          if (error) throw error
+          console.log('data: ', data)
+          const profilePictureUrl = data[0].profile_picture_url
+          setProfilePictureUrl(profilePictureUrl)
+        }
+      } catch (error) {
+        console.log('error: ', error)
+      }
+    }
+
+    if (userId) getUser()
   }, [userId])
 
   const addNewLink = async () => {
@@ -94,6 +116,15 @@ export default function Home() {
 
   return (
     <div className="flex flex-col w-full justify-center items-center mt-4">
+      {profilePictureUrl && (
+        <Image
+          src={profilePictureUrl}
+          height={100}
+          width={100}
+          alt="avatar"
+          className="rounded-full border-black border"
+        />
+      )}
       {links?.map((link: Link, index: number) => (
         <div className="mt-4 flex text-center text-white" key={index}>
           <a
@@ -106,6 +137,7 @@ export default function Home() {
           </a>
         </div>
       ))}
+
       {isAuthenticated && (
         <>
           <div>
